@@ -1,0 +1,559 @@
+basePath: /
+definitions:
+  domain.App:
+    properties:
+      code:
+        type: string
+      icon:
+        type: string
+      name:
+        type: string
+      namespaceCode:
+        type: string
+    type: object
+  domain.AppData:
+    properties:
+      data:
+        additionalProperties: true
+        description: Произвольные JSON данные
+        type: object
+      uid:
+        description: Уникальный идентификатор
+        type: string
+    type: object
+  domain.Namespace:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Это API моего сервиса
+  title: My App API
+  version: "1.0"
+paths:
+  /namespace/{namespace}/app:
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новое приложение внутри namespace
+      parameters:
+      - description: Namespace Code
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: Информация о приложении
+        in: body
+        name: app
+        required: true
+        schema:
+          $ref: '#/definitions/domain.App'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать новое приложение
+      tags:
+      - apps
+  /namespace/{namespace}/app/{app}:
+    delete:
+      description: Удаляет приложение по namespace и коду
+      parameters:
+      - description: Namespace Code
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: App Code
+        in: path
+        name: app
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить приложение
+      tags:
+      - apps
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию о приложении в указанном namespace
+      parameters:
+      - description: Namespace Code
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: App Code
+        in: path
+        name: app
+        required: true
+        type: string
+      - description: Информация о приложении
+        in: body
+        name: app
+        required: true
+        schema:
+          $ref: '#/definitions/domain.App'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить приложение
+      tags:
+      - apps
+  /namespace/{namespace}/app/{app}/data:
+    get:
+      description: Возвращает все данные для указанного приложения в namespace
+      parameters:
+      - description: Namespace Code
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: App Code
+        in: path
+        name: app
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.AppData'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить все данные приложения
+      tags:
+      - app-data
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новые данные для указанного приложения в namespace
+      parameters:
+      - description: Namespace Code
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: App Code
+        in: path
+        name: app
+        required: true
+        type: string
+      - description: Данные приложения
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/domain.AppData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.AppData'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать новые данные приложения
+      tags:
+      - app-data
+  /namespace/{namespace}/app/{app}/data/{uid}:
+    delete:
+      description: Удаляет данные по UID
+      parameters:
+      - description: Namespace Code
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: App Code
+        in: path
+        name: app
+        required: true
+        type: string
+      - description: Data UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить данные
+      tags:
+      - app-data
+    get:
+      description: Возвращает данные приложения по уникальному идентификатору
+      parameters:
+      - description: Namespace Code
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: App Code
+        in: path
+        name: app
+        required: true
+        type: string
+      - description: Data UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.AppData'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить данные по UID
+      tags:
+      - app-data
+    patch:
+      consumes:
+      - application/json
+      description: Обновляет только указанные поля данных
+      parameters:
+      - description: Namespace Code
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: App Code
+        in: path
+        name: app
+        required: true
+        type: string
+      - description: Data UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Поля для обновления
+        in: body
+        name: data
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Частично обновить данные
+      tags:
+      - app-data
+    put:
+      consumes:
+      - application/json
+      description: Заменяет все данные для указанного UID
+      parameters:
+      - description: Namespace Code
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: App Code
+        in: path
+        name: app
+        required: true
+        type: string
+      - description: Data UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Новые данные
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/domain.AppData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.AppData'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Полностью обновить данные
+      tags:
+      - app-data
+  /namespace/{namespace}/apps:
+    get:
+      description: Возвращает список всех приложений в указанном namespace
+      parameters:
+      - description: Namespace Code
+        in: path
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.App'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить все приложения по namespace
+      tags:
+      - apps
+  /namespaces:
+    get:
+      description: Get list of all namespaces
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Namespace'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get all namespaces
+      tags:
+      - namespaces
+    post:
+      consumes:
+      - application/json
+      description: Create a new namespace with the input payload
+      parameters:
+      - description: Namespace data
+        in: body
+        name: namespace
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Namespace'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Namespace'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Create a namespace
+      tags:
+      - namespaces
+  /namespaces/{code}:
+    delete:
+      description: Delete namespace by code
+      parameters:
+      - description: Namespace code
+        in: path
+        name: code
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Delete namespace
+      tags:
+      - namespaces
+    get:
+      description: Get namespace details by its code
+      parameters:
+      - description: Namespace code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Namespace'
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get namespace by code
+      tags:
+      - namespaces
+    put:
+      consumes:
+      - application/json
+      description: Update namespace details
+      parameters:
+      - description: Namespace code
+        in: path
+        name: code
+        required: true
+        type: string
+      - description: Namespace data
+        in: body
+        name: namespace
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Namespace'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Namespace'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Update namespace
+      tags:
+      - namespaces
+swagger: "2.0"

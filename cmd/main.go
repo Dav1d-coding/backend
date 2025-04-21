@@ -1,3 +1,8 @@
+// @title My App API
+// @version 1.0
+// @description Это API моего сервиса
+// @host localhost:8080
+// @BasePath /
 package main
 
 import (
@@ -9,8 +14,11 @@ import (
 	"log"
 	"net/http"
 
+	_ "app/backendv1/docs"
+
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func main() {
@@ -35,9 +43,16 @@ func main() {
 	appUC := usecase.NewAppUsecase(appRepo)
 	appHandler := http_handler.NewAppHandler(appUC)
 
+	//appData setup
+	appDataRepo := postgres.NewAppDataRepo(db)
+	appDataUC := usecase.NewAppDataUsecase(appDataRepo)
+	appDataHandler := http_handler.NewAppDataHandler(appDataUC)
+
 	r := mux.NewRouter()
 	namespaceHandler.RegisterRoutes(r)
 	appHandler.RegisterRoutes(r)
+	appDataHandler.RegisterRoutes(r)
+	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 
 	log.Println("Server running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))

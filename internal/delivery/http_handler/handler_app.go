@@ -26,6 +26,18 @@ func (h *appHandler) RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/namespace/{namespace}/app/{app}", h.Delete).Methods("DELETE")
 }
 
+// CreateAppHandler godoc
+// @Summary Создать новое приложение
+// @Description Создаёт новое приложение внутри namespace
+// @Tags apps
+// @Accept json
+// @Produce json
+// @Param namespace path string true "Namespace Code"
+// @Param app body domain.App true "Информация о приложении"
+// @Success 201 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /namespace/{namespace}/app [post]
 func (h *appHandler) Create(w http.ResponseWriter, r *http.Request) {
 	namespaceCode := mux.Vars(r)["namespace"]
 	fmt.Print(namespaceCode)
@@ -47,6 +59,15 @@ func (h *appHandler) Create(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(app)
 }
 
+// GetAppsHandler godoc
+// @Summary Получить все приложения по namespace
+// @Description Возвращает список всех приложений в указанном namespace
+// @Tags apps
+// @Produce json
+// @Param namespace path string true "Namespace Code"
+// @Success 200 {array} domain.App
+// @Failure 500 {object} map[string]string
+// @Router /namespace/{namespace}/apps [get]
 func (h *appHandler) GetAllByCodeNamespace(w http.ResponseWriter, r *http.Request) {
 	code := mux.Vars(r)["namespace"]
 	apps, err := h.uc.GetAllByCodeNamespace(code)
@@ -65,6 +86,19 @@ func (h *appHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(apps)
 }
 
+// UpdateAppHandler godoc
+// @Summary Обновить приложение
+// @Description Обновляет информацию о приложении в указанном namespace
+// @Tags apps
+// @Accept json
+// @Produce json
+// @Param namespace path string true "Namespace Code"
+// @Param app path string true "App Code"
+// @Param app body domain.App true "Информация о приложении"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /namespace/{namespace}/app/{app} [put]
 func (h *appHandler) Update(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	code := vars["app"]
@@ -88,6 +122,15 @@ func (h *appHandler) Update(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(app)
 }
 
+// DeleteAppHandler godoc
+// @Summary Удалить приложение
+// @Description Удаляет приложение по namespace и коду
+// @Tags apps
+// @Param namespace path string true "Namespace Code"
+// @Param app path string true "App Code"
+// @Success 200 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /namespace/{namespace}/app/{app} [delete]
 func (h *appHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	appCode := mux.Vars(r)["app"]
 	namespaceCode := mux.Vars(r)["namespace"]

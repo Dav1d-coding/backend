@@ -3,6 +3,7 @@ package postgres
 import (
 	"app/backendv1/internal/domain"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 )
 
@@ -15,8 +16,32 @@ func NewAppRepo(db *sql.DB) *appRepo {
 }
 
 func (r *appRepo) Create(app *domain.App) error {
+	// Создаем базовую структуру для fields
+	// Создаем структуру fields согласно требованиям
+	fields := map[string]interface{}{
+		"item": []interface{}{
+			map[string]interface{}{
+				"name": map[string]interface{}{
+					"type": "string",
+				},
+			},
+		},
+	}
+
+	// Преобразуем в JSON
+	fieldsJSON, err := json.Marshal(fields)
+	if err != nil {
+		return fmt.Errorf("failed to marshal fields: %w", err)
+	}
 	// fmt.Print(app.Code, app.Name, app.NamespaceCode, app.Icon)
-	_, err := r.db.Exec("INSERT INTO apps (code, name, namespace_code, icon) VALUES ($1, $2, $3, $4)", app.Code, app.Name, app.NamespaceCode, app.Icon)
+	_, err = r.db.Exec("INSERT INTO apps (code, name, namespace_code, icon, fields) VALUES ($1, $2, $3, $4, $5)", app.Code, app.Name, app.NamespaceCode, app.Icon, fieldsJSON)
+	if err != nil {
+		return fmt.Errorf("failed to marshal fields: %w", err)
+	}
+	query := "CREATE TABLE IF NOT EXISTS " + app.NamespaceCode + "." + app.Code + " (uid uuid PRIMARY KEY DEFAULT gen_random_uuid(), data jsonb not null default '{}'::jsonb)"
+	_, err = r.db.Exec(query)
+	// fmt.Printf(query)
+	// fmt.Print(err.Error())
 	return err
 }
 

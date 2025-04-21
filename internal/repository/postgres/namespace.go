@@ -15,7 +15,11 @@ func NewNamespaceRepo(db *sql.DB) *namespaceRepo {
 }
 
 func (r *namespaceRepo) Create(namespace *domain.Namespace) error {
-	_, err := r.db.Exec("INSERT INTO namespaces (code, name) VALUES ($1, $2)", namespace.Code, namespace.Name)
+	_, err := r.db.Exec("CREATE SCHEMA " + namespace.Code)
+	if err != nil {
+		return err
+	}
+	_, err = r.db.Exec("INSERT INTO namespaces (code, name) VALUES ($1, $2)", namespace.Code, namespace.Name)
 	return err
 }
 
